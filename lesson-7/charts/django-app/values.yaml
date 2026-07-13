@@ -1,0 +1,34 @@
+image:
+  repository: 451664151890.dkr.ecr.eu-north-1.amazonaws.com/python-app-repo
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 8000
+
+ingress:
+  enabled: false
+
+config:
+  POSTGRES_DB: django_db
+  POSTGRES_USER: django_user
+  POSTGRES_PASSWORD: pass9764gd
+  POSTGRES_HOST: db
+  POSTGRES_PORT: "5432"
+  DATABASE_HOST: db
+  DATABASE_PORT: "5432"
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
