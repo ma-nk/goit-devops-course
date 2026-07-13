@@ -22,3 +22,10 @@ variable "vpc_name" {
   type        = string
   description = "Name tag for the VPC resources"
 }
+
+variable "enable_nat_gateway" {
+  type        = bool
+  default     = true
+  description = "Enable NAT Gateway for private subnets"
+}
+

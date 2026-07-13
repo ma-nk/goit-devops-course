@@ -23,6 +23,31 @@ output "private_subnets" {
   description = "IDs of the private subnets"
 }
 
+output "vpc_cidr_block" {
+  value       = module.vpc.vpc_cidr_block
+  description = "The CIDR block of the VPC"
+}
+
+output "internet_gateway_id" {
+  value       = module.vpc.internet_gateway_id
+  description = "The ID of the Internet Gateway"
+}
+
+output "nat_gateway_ids" {
+  value       = module.vpc.nat_gateway_ids
+  description = "List of IDs of the NAT Gateways"
+}
+
+output "public_route_table_id" {
+  value       = module.vpc.public_route_table_id
+  description = "The ID of the public route table"
+}
+
+output "private_route_table_ids" {
+  value       = module.vpc.private_route_table_ids
+  description = "List of IDs of the private route tables"
+}
+
 output "ecr_repository_url" {
   value       = module.ecr.repository_url
   description = "URL of the ECR repository"

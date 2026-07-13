@@ -34,3 +34,25 @@ resource "aws_ecr_repository_policy" "policy" {
     ]
   })
 }
+
+resource "aws_ecr_lifecycle_policy" "lifecycle" {
+  count      = var.enable_lifecycle_policy ? 1 : 0
+  repository = aws_ecr_repository.repo.name
+
+  policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Keep last ${var.max_image_count} images"
+        selection = {
+          tagStatus   = "any"
+          countType   = "imageCountType"
+          countNumber = var.max_image_count
+        }
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
+}

@@ -8,3 +8,15 @@ variable "scan_on_push" {
   default     = true
   description = "Indicates whether images are scanned after being pushed to the repository"
 }
+
+variable "enable_lifecycle_policy" {
+  type        = bool
+  default     = true
+  description = "Enable ECR lifecycle policy"
+}
+
+variable "max_image_count" {
+  type        = number
+  default     = 10
+  description = "Max number of images to keep in ECR"
+}

@@ -5,6 +5,8 @@ AWS infrastructure using Terraform modules.
 ## Project Structure
 
 *   `main.tf`: Main config, calls modules.
+*   `providers.tf`: Provider configuration.
+*   `variables.tf`: Root variables.
 *   `backend.tf`: S3 backend config.
 *   `outputs.tf`: Global outputs.
 *   `modules/`:
@@ -27,7 +29,15 @@ AWS infrastructure using Terraform modules.
 ### ecr
 *   ECR repository.
 *   Scan on push enabled.
-*   Basic repository policy.
+*   Basic repository policy & lifecycle policy.
+
+## Configuration
+
+Key variables in `variables.tf`:
+*   `aws_region`: AWS region (default: `us-west-2`).
+*   `enable_nat_gateway`: Toggle NAT Gateway (default: `true`).
+*   `enable_lifecycle_policy`: Toggle ECR lifecycle policy (default: `true`).
+*   `max_image_count`: Max images to keep in ECR (default: `10`).
 
 ## Usage
 
