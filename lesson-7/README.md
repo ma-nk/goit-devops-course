@@ -19,6 +19,7 @@ This directory contains configuration files for creating AWS EKS infrastructure 
     *   `vpc/`: VPC, subnets, gateways, routes.
     *   `ecr/`: ECR registry & policy.
     *   `eks/`: EKS cluster, node groups, and IAM roles.
+    *   `rds/`: Universal RDS & Aurora module.
 *   `charts/`:
     *   `django-app/`: Helm chart for deploying the Django application.
         *   `Chart.yaml`: Helm chart metadata.
@@ -38,7 +39,8 @@ Key variables in `variables.tf`:
 Modules configured:
 1.  **VPC**: Public and private subnets, NAT Gateway, Route Tables.
 2.  **ECR**: ECR repository (`app-repo`) to store the Django app image.
-3.  **EKS**: EKS cluster running on private subnets with managed Node Groups (`t2.micro` instances).
+3.  **EKS**: EKS cluster running on private subnets with managed Node Groups (`t3.medium` instances).
+4.  **RDS**: Universal RDS and Aurora module supporting both cluster and single-instance databases.
 
 ## Helm Chart Details
 
@@ -89,4 +91,28 @@ The Helm chart implements:
    kubectl -n argocd get svc argo-cd-argocd-server -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
    ```
 3. Open the UI, log in, and view the `example-app` application status to confirm successful git synchronization.
+
+### RDS / Aurora Module Usage
+
+Example module usage:
+```hcl
+module "rds" {
+  source             = "./modules/rds"
+  name               = "myapp-db"
+  use_aurora         = true # true for Aurora Cluster, false for Standard RDS
+  engine             = "postgres"
+  engine_version     = "14.7"
+  instance_class     = "db.t3.medium"
+  db_name            = "myapp"
+  username           = "postgres"
+  password           = var.db_password
+  vpc_id             = module.vpc.vpc_id
+  subnet_private_ids = module.vpc.private_subnets
+  subnet_public_ids  = module.vpc.public_subnets
+}
+```
+
+* **Зміна типу БД**: Встановіть `use_aurora = true` для розгортання Aurora Cluster (з Writer та Reader репліками) або `use_aurora = false` для стандартного одиночного RDS інстансу.
+* **Зміна Engine та класу інстансу**: Вкажіть потрібний `engine` (`postgres`, `aurora-postgresql`, `mysql`), `engine_version` та клас інстансу через `instance_class` (наприклад, `db.t3.micro` чи `db.t3.medium`).
+
 
