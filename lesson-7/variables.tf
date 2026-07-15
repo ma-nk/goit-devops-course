@@ -4,3 +4,9 @@ variable "aws_region" {
   description = "AWS region"
 }
 
+variable "cluster_name" {
+  type        = string
+  default     = "eks-cluster-demo"
+  description = "Name of the EKS cluster"
+}
+

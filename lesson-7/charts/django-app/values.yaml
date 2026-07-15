@@ -1,5 +1,5 @@
 image:
-  repository: 451664151890.dkr.ecr.eu-north-1.amazonaws.com/python-app-repo
+  repository: 451664151890.dkr.ecr.eu-north-1.amazonaws.com/app-repo
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -22,6 +22,8 @@ config:
 
 secrets:
   POSTGRES_PASSWORD: pass9764gd
+  DJANGO_SECRET_KEY: django-insecure-secret-key-12345
+
 
 resources:
   limits:

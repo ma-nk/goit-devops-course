@@ -1,0 +1,29 @@
+applications:
+  - name: example-app
+    namespace: default
+    project: default
+    source:
+      repoURL: https://github.com/AndriyDmitriv/goit-devops.git
+      path: django-chart
+      targetRevision: main
+      helm:
+        valueFiles:
+          - values.yaml
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: default
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+
+repositories:
+  - name: example-app
+    url: https://github.com/AndriyDmitriv/goit-devops.git
+    username: AndriyDmitriv
+    password: YOUR_PASS
+
+repoConfig:
+  insecure: "true"
+  enableLfs: "true"
+

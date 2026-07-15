@@ -57,14 +57,36 @@ The Helm chart implements:
    ```bash
    terraform init
    ```
-2. Apply changes to build VPC, EKS, and ECR:
+2. Apply changes to build VPC, EKS, ECR, Jenkins, and Argo CD:
    ```bash
    terraform apply
    ```
+3. Configure kubectl to connect to the new cluster:
+   ```bash
+   aws eks update-kubeconfig --region eu-north-1 --name eks-cluster-demo
+   ```
 
-### Helm (Deployment)
+### Jenkins (CI Pipeline)
 
-To deploy the Helm chart:
-```bash
-helm install django-app ./charts/django-app
-```
+1. Get the Jenkins admin password:
+   ```bash
+   kubectl -n jenkins exec -it svc/jenkins -c jenkins -- /bin/cat /run/secrets/additional/chart-admin-password
+   ```
+2. Access the Jenkins UI via its LoadBalancer:
+   ```bash
+   kubectl -n jenkins get svc jenkins -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+   ```
+3. Open the UI, log in, and verify the `seed-job` status and the generated `goit-django-docker` pipeline job.
+
+### Argo CD (CD Pipeline)
+
+1. Get the Argo CD initial admin password:
+   ```bash
+   kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+   ```
+2. Access the Argo CD UI via its LoadBalancer:
+   ```bash
+   kubectl -n argocd get svc argo-cd-argocd-server -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+   ```
+3. Open the UI, log in, and view the `example-app` application status to confirm successful git synchronization.
+
