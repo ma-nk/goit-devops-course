@@ -3,9 +3,9 @@ applications:
     namespace: default
     project: default
     source:
-      repoURL: https://github.com/AndriyDmitriv/goit-devops.git
-      path: django-chart
-      targetRevision: main
+      repoURL: https://github.com/ma-nk/goit-devops-course.git
+      path: lesson-7/charts/django-app
+      targetRevision: lesson-7
       helm:
         valueFiles:
           - values.yaml
@@ -17,13 +17,10 @@ applications:
         prune: true
         selfHeal: true
 
-repositories:
-  - name: example-app
-    url: https://github.com/AndriyDmitriv/goit-devops.git
-    username: AndriyDmitriv
-    password: YOUR_PASS
+repositories: []
 
 repoConfig:
   insecure: "true"
   enableLfs: "true"
+
 

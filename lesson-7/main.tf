@@ -41,10 +41,10 @@ module "eks" {
   source          = "./modules/eks"          
   cluster_name    = "eks-cluster-demo"            # Назва кластера
   subnet_ids      = module.vpc.private_subnets     # ID підмереж
-  instance_type   = "t3.medium"                    # Тип інстансів
-  desired_size    = 1                             # Бажана кількість нодів
-  max_size        = 2                             # Максимальна кількість нодів
-  min_size        = 1                             # Мінімальна кількість нодів
+  instance_type   = "t3.small"                     # Тип інстансів
+  desired_size    = 2                             # Бажана кількість нодів
+  max_size        = 3                             # Максимальна кількість нодів
+  min_size        = 2                             # Мінімальна кількість нодів
 }
 
 module "jenkins" {
@@ -72,7 +72,7 @@ module "rds" {
   source = "./modules/rds"
 
   name                       = "myapp-db"
-  use_aurora                 = true
+  use_aurora                 = false
   aurora_instance_count      = 2
 
   # --- Aurora-only ---
@@ -83,11 +83,11 @@ module "rds" {
 
   # --- RDS-only ---
   engine                     = "postgres"
-  engine_version             = "17.2"
+  engine_version             = "17.5"
   parameter_group_family_rds = "postgres17"
 
   # Common
-  instance_class             = "db.t3.medium"
+  instance_class             = "db.t3.micro"
   allocated_storage          = 20
   db_name                    = "myapp"
   username                   = "postgres"
@@ -97,7 +97,7 @@ module "rds" {
   publicly_accessible        = true
   vpc_id                     = module.vpc.vpc_id
   multi_az                   = true
-  backup_retention_period    = 7
+  backup_retention_period    = 1
   parameters = {
     max_connections              = "200"
     log_min_duration_statement   = "500"
