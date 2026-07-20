@@ -37,7 +37,7 @@ spec:
     COMMIT_EMAIL   = "jenkins@localhost"
     COMMIT_NAME    = "jenkins"
     GIT_REPO_URL   = "github.com/ma-nk/goit-devops-course.git"
-    TARGET_BRANCH  = "lesson-8-9"
+    TARGET_BRANCH  = "final_project"
   }
 
   stages {

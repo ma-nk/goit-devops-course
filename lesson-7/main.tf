@@ -41,7 +41,7 @@ module "eks" {
   source          = "./modules/eks"          
   cluster_name    = "eks-cluster-demo"            # Назва кластера
   subnet_ids      = module.vpc.private_subnets     # ID підмереж
-  instance_type   = "t3.small"                     # Тип інстансів
+  instance_type   = "t3.small"                     # Тип інстансів (сумісний з AWS Free Tier policy)
   desired_size    = 2                             # Бажана кількість нодів
   max_size        = 3                             # Максимальна кількість нодів
   min_size        = 2                             # Мінімальна кількість нодів
