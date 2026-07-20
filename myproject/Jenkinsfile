@@ -28,12 +28,16 @@ spec:
   }
 
   environment {
-    ECR_REGISTRY = "451664151890.dkr.ecr.eu-north-1.amazonaws.com"
-    IMAGE_NAME   = "app-repo"
-    IMAGE_TAG    = "v1.0.${BUILD_NUMBER}"
+    AWS_ACCOUNT_ID = "${env.AWS_ACCOUNT_ID ?: '451664151890'}"
+    AWS_REGION     = "${env.AWS_REGION ?: 'eu-north-1'}"
+    ECR_REGISTRY   = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+    IMAGE_NAME     = "app-repo"
+    IMAGE_TAG      = "v1.0.${BUILD_NUMBER}"
 
-    COMMIT_EMAIL = "jenkins@localhost"
-    COMMIT_NAME  = "jenkins"
+    COMMIT_EMAIL   = "jenkins@localhost"
+    COMMIT_NAME    = "jenkins"
+    GIT_REPO_URL   = "github.com/ma-nk/goit-devops-course.git"
+    TARGET_BRANCH  = "lesson-8-9"
   }
 
   stages {
@@ -41,12 +45,12 @@ spec:
       steps {
         container('kaniko') {
           sh '''
-            /kaniko/executor \\
-              --context `pwd` \\
-              --dockerfile `pwd`/Dockerfile \\
-              --destination=$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \\
-              --cache=true \\
-              --insecure \\
+            /kaniko/executor \
+              --context `pwd` \
+              --dockerfile `pwd`/lesson-7/Dockerfile \
+              --destination=$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
+              --cache=true \
+              --insecure \
               --skip-tls-verify
           '''
         }
@@ -58,17 +62,18 @@ spec:
         container('git') {
           withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PAT')]) {
             sh '''
-              git clone https://$GIT_USERNAME:$GIT_PAT@github.com/AndriyDmitriv/goit-devops.git
-              cd goit-devops/django-chart
- 
-              sed -i "s/tag: .*/tag: $IMAGE_TAG/" values.yaml
- 
+              git clone https://$GIT_USERNAME:$GIT_PAT@$GIT_REPO_URL repo
+              cd repo
+              git checkout $TARGET_BRANCH || git checkout -b $TARGET_BRANCH
+
+              sed -i "s|tag: .*|tag: $IMAGE_TAG|" lesson-7/charts/django-app/values.yaml
+
               git config user.email "$COMMIT_EMAIL"
               git config user.name "$COMMIT_NAME"
- 
-              git add values.yaml
+
+              git add lesson-7/charts/django-app/values.yaml
               git commit -m "Update image tag to $IMAGE_TAG"
-              git push origin main
+              git push origin $TARGET_BRANCH
             '''
           }
         }

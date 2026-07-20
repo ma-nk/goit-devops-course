@@ -5,7 +5,7 @@ applications:
     source:
       repoURL: https://github.com/ma-nk/goit-devops-course.git
       path: lesson-7/charts/django-app
-      targetRevision: lesson-7
+      targetRevision: lesson-8-9
       helm:
         valueFiles:
           - values.yaml

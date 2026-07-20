@@ -47,8 +47,8 @@ controller:
                   - usernamePassword:
                       scope: GLOBAL
                       id: github-token
-                      username: AndriyDmitriv
-                      password: YOUR_GITHUB_PAT_HERE
+                      username: ma-nk
+                      password: ${GITHUB_PAT}
                       description: GitHub PAT
       seed-job: |
         jobs:
@@ -58,10 +58,10 @@ controller:
                 scm {
                   git {
                     remote {
-                      url('https://github.com/AndriyDmitriv/infra.git')
+                      url('https://github.com/ma-nk/goit-devops-course.git')
                       credentials('github-token')
                     }
-                    branches('*/main')
+                    branches('*/lesson-8-9')
                   }
                 }
                 steps {
@@ -73,10 +73,10 @@ controller:
                             scm {
                               git {
                                 remote {
-                                  url("https://github.com/AndriyDmitriv/infra.git")
+                                  url("https://github.com/ma-nk/goit-devops-course.git")
                                   credentials("github-token")
                                 }
-                                branches("*/main")
+                                branches("*/lesson-8-9")
                               }
                             }
                             scriptPath("myproject/Jenkinsfile")

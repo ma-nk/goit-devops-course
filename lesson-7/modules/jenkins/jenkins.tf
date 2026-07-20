@@ -1,13 +1,33 @@
+resource "kubernetes_namespace_v1" "jenkins" {
+  metadata {
+    name = "jenkins"
+  }
+}
+
+resource "kubernetes_service_account_v1" "jenkins_sa" {
+  metadata {
+    name      = "jenkins-sa"
+    namespace = kubernetes_namespace_v1.jenkins.metadata[0].name
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.jenkins_kaniko_role.arn
+    }
+  }
+}
+
 resource "helm_release" "jenkins" {
   name             = "jenkins"
-  namespace        = "jenkins"
+  namespace        = kubernetes_namespace_v1.jenkins.metadata[0].name
   repository       = "https://charts.jenkins.io"
   chart            = "jenkins"
   version          = "5.9.38"
-  create_namespace = true
+  create_namespace = false
 
   values = [
     file("${path.module}/values.yaml")
+  ]
+
+  depends_on = [
+    kubernetes_service_account_v1.jenkins_sa
   ]
 }
 
@@ -27,19 +47,6 @@ resource "kubernetes_storage_class_v1" "ebs_sc" {
   parameters = {
     type = "gp3"
   }
-}
-
-resource "kubernetes_service_account_v1" "jenkins_sa" {
-  metadata {
-    name      = "jenkins-sa"
-    namespace = "jenkins"
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.jenkins_kaniko_role.arn
-    }
-  }
-  depends_on = [
-    helm_release.jenkins
-  ]
 }
 
 resource "aws_iam_role" "jenkins_kaniko_role" {

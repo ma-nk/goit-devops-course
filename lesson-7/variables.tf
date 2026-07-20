@@ -10,3 +10,10 @@ variable "cluster_name" {
   description = "Name of the EKS cluster"
 }
 
+variable "db_password" {
+  type        = string
+  description = "Database administrator password"
+  sensitive   = true
+  default     = "ChangeMe123Secret!"
+}
+

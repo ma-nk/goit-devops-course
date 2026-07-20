@@ -11,17 +11,17 @@ ingress:
   enabled: false
 
 config:
-  POSTGRES_DB: django_db
-  POSTGRES_USER: django_user
-  POSTGRES_HOST: db
+  POSTGRES_DB: myapp
+  POSTGRES_USER: postgres
+  POSTGRES_HOST: myapp-db
   POSTGRES_PORT: "5432"
-  DATABASE_HOST: db
+  DATABASE_HOST: myapp-db
   DATABASE_PORT: "5432"
   DEBUG: "True"
   ALLOWED_HOSTS: "*"
 
 secrets:
-  POSTGRES_PASSWORD: pass9764gd
+  POSTGRES_PASSWORD: ChangeMe123Secret!
   DJANGO_SECRET_KEY: django-insecure-secret-key-12345
 
 
