@@ -88,6 +88,7 @@ resource "aws_eks_node_group" "general" {
     aws_iam_role_policy_attachment.amazon_eks_cni_policy,
     aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only,
     aws_iam_role_policy_attachment.amazon_ssm_managed_instance_core,
+    aws_eks_access_entry.node_access,
   ]
 
 }

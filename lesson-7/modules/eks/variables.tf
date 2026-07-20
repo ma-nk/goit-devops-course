@@ -4,8 +4,14 @@ variable "cluster_name" {
 }
 
 variable "subnet_ids" {
-  description = "List of subnet IDs for the EKS cluster"
+  description = "List of subnet IDs for the EKS cluster worker nodes"
   type        = list(string)
+}
+
+variable "public_subnet_ids" {
+  description = "List of public subnet IDs for EKS control plane"
+  type        = list(string)
+  default     = []
 }
 
 variable "instance_type" {

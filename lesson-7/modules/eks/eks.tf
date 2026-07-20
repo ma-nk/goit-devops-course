@@ -41,7 +41,7 @@ resource "aws_eks_cluster" "eks" {
   vpc_config {
     endpoint_private_access = true   # Включає приватний доступ до API-сервера
     endpoint_public_access  = true   # Включає публічний доступ до API-сервера
-    subnet_ids = var.subnet_ids      # Список підмереж, де буде працювати EKS
+    subnet_ids = length(var.public_subnet_ids) > 0 ? concat(var.public_subnet_ids, var.subnet_ids) : var.subnet_ids      # Список підмереж (public + private), де буде працювати EKS
   }
 
   # Налаштування доступу до EKS-кластера
@@ -70,4 +70,20 @@ resource "aws_eks_access_policy_association" "admin_policy" {
   access_scope {
     type = "cluster"
   }
+}
+
+resource "aws_eks_access_entry" "node_access" {
+  cluster_name  = aws_eks_cluster.eks.name
+  principal_arn = aws_iam_role.nodes.arn
+  type          = "EC2_LINUX"
+}
+
+resource "aws_security_group_rule" "eks_cluster_ingress" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "-1"
+  security_group_id = aws_eks_cluster.eks.vpc_config[0].cluster_security_group_id
+  cidr_blocks       = ["10.0.0.0/16"]
+  description       = "Allow VPC internal traffic to EKS cluster security group"
 }
