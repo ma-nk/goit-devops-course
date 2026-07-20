@@ -38,32 +38,13 @@ module "ecr" {
 }
 
 module "eks" {
-  source            = "./modules/eks"          
-  cluster_name      = "eks-cluster-demo"            # Назва кластера
-  subnet_ids        = module.vpc.private_subnets     # ID приватних підмереж
-  public_subnet_ids = module.vpc.public_subnets      # ID публічних підмереж
-  instance_type     = "t3.small"                     # Тип інстансів (сумісний з AWS Free Tier policy)
-  desired_size      = 3                             # Бажана кількість нодів
-  max_size          = 4                             # Максимальна кількість нодів
-  min_size          = 2                             # Мінімальна кількість нодів
-}
-
-module "metrics_server" {
-  source     = "./modules/metrics_server"
-  depends_on = [module.eks]
-  providers = {
-    helm       = helm
-    kubernetes = kubernetes
-  }
-}
-
-module "monitoring" {
-  source     = "./modules/monitoring"
-  depends_on = [module.eks]
-  providers = {
-    helm       = helm
-    kubernetes = kubernetes
-  }
+  source          = "./modules/eks"          
+  cluster_name    = "eks-cluster-demo"            # Назва кластера
+  subnet_ids      = module.vpc.private_subnets     # ID підмереж
+  instance_type   = "t3.medium"                    # Тип інстансів
+  desired_size    = 2                             # Бажана кількість нодів
+  max_size        = 3                             # Максимальна кількість нодів
+  min_size        = 2                             # Мінімальна кількість нодів
 }
 
 module "jenkins" {
@@ -71,7 +52,6 @@ module "jenkins" {
   cluster_name      = module.eks.eks_cluster_name
   oidc_provider_arn = module.eks.oidc_provider_arn
   oidc_provider_url = module.eks.oidc_provider_url
-  depends_on        = [module.eks]
   providers = {
     helm       = helm
     kubernetes = kubernetes
@@ -79,10 +59,9 @@ module "jenkins" {
 }
 
 module "argo_cd" {
-  source        = "./modules/argo_cd"
-  namespace     = "argocd"
+  source       = "./modules/argo_cd"
+  namespace    = "argocd"
   chart_version = "5.46.4"
-  depends_on    = [module.eks]
   providers = {
     helm       = helm
     kubernetes = kubernetes
