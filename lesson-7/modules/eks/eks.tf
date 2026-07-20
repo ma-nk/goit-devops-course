@@ -53,3 +53,21 @@ resource "aws_eks_cluster" "eks" {
   # Залежність від IAM-політики для ролі EKS
   depends_on = [aws_iam_role_policy_attachment.eks]
 }
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_eks_access_entry" "admin_access" {
+  cluster_name  = aws_eks_cluster.eks.name
+  principal_arn = data.aws_caller_identity.current.arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "admin_policy" {
+  cluster_name  = aws_eks_cluster.eks.name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  principal_arn = aws_eks_access_entry.admin_access.principal_arn
+
+  access_scope {
+    type = "cluster"
+  }
+}

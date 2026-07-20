@@ -1,0 +1,22 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+errored.tfstate
+.terraform/
+.terraform.lock.hcl
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*$py.class
+db.sqlite3
+db.sqlite3-journal
+*.log
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+.env
+.venv/
