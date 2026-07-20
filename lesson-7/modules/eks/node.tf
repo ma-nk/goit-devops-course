@@ -38,6 +38,12 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
   role       = aws_iam_role.nodes.name
 }
 
+# Прив'язка політики для SSM
+resource "aws_iam_role_policy_attachment" "amazon_ssm_managed_instance_core" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.nodes.name
+}
+
 # Створення Node Group для EKS
 resource "aws_eks_node_group" "general" {
   # Ім'я EKS-кластера
@@ -51,6 +57,9 @@ resource "aws_eks_node_group" "general" {
 
   # Підмережі, де будуть EC2-вузли
   subnet_ids = var.subnet_ids
+
+  # AMI тип для EKS 1.36
+  ami_type = "AL2023_x86_64_STANDARD"
 
   # Тип EC2-інстансів для вузлів
   capacity_type  = "ON_DEMAND"
@@ -78,6 +87,7 @@ resource "aws_eks_node_group" "general" {
     aws_iam_role_policy_attachment.amazon_eks_worker_node_policy,
     aws_iam_role_policy_attachment.amazon_eks_cni_policy,
     aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only,
+    aws_iam_role_policy_attachment.amazon_ssm_managed_instance_core,
   ]
 
 }

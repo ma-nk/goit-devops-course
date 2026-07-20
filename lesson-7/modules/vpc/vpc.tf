@@ -59,5 +59,8 @@ resource "aws_nat_gateway" "nat" {
     Name = "${var.vpc_name}-nat-gw"
   }
 
-  depends_on = [aws_internet_gateway.gw]
+  depends_on = [
+    aws_internet_gateway.gw,
+    aws_route_table_association.public
+  ]
 }
