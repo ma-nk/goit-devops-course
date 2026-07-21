@@ -41,8 +41,8 @@ resource "kubernetes_storage_class_v1" "ebs_sc" {
 
   storage_provisioner = "ebs.csi.aws.com"
 
-  reclaim_policy       = "Delete"
-  volume_binding_mode  = "WaitForFirstConsumer"
+  reclaim_policy      = "Delete"
+  volume_binding_mode = "WaitForFirstConsumer"
 
   parameters = {
     type = "gp3"
@@ -79,9 +79,13 @@ resource "aws_iam_role_policy" "jenkins_ecr_policy" {
     Version = "2012-10-17",
     Statement = [
       {
+        Effect   = "Allow",
+        Action   = ["ecr:GetAuthorizationToken"],
+        Resource = "*"
+      },
+      {
         Effect = "Allow",
         Action = [
-          "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:PutImage",
           "ecr:InitiateLayerUpload",
@@ -89,7 +93,7 @@ resource "aws_iam_role_policy" "jenkins_ecr_policy" {
           "ecr:CompleteLayerUpload",
           "ecr:DescribeRepositories"
         ],
-        Resource = "*"
+        Resource = var.ecr_repository_arn
       }
     ]
   })

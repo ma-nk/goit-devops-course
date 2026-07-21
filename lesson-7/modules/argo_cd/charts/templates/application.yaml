@@ -20,5 +20,7 @@ spec:
     namespace: {{ .destination.namespace }}
   syncPolicy:
     {{- toYaml .syncPolicy | nindent 4 }}
+    syncOptions:
+      - CreateNamespace=true
 ---
 {{- end }}

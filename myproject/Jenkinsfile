@@ -41,17 +41,33 @@ spec:
   }
 
   stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+        script {
+          def msg = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+          env.SKIP_CI = msg.contains('[skip ci]') ? 'true' : 'false'
+        }
+      }
+    }
+
+    stage('ECR Login') {
+      steps {
+        container('git') {
+          sh 'echo "ECR Login authentication handled via AWS EKS IRSA Role."'
+        }
+      }
+    }
+
     stage('Build & Push Docker Image') {
       steps {
         container('kaniko') {
           sh '''
             /kaniko/executor \
-              --context `pwd` \
-              --dockerfile `pwd`/lesson-7/Dockerfile \
+              --context="dir://${WORKSPACE}" \
+              --dockerfile="${WORKSPACE}/lesson-7/Dockerfile" \
               --destination=$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
-              --cache=true \
-              --insecure \
-              --skip-tls-verify
+              --cache=true
           '''
         }
       }
@@ -72,12 +88,30 @@ spec:
               git config user.name "$COMMIT_NAME"
 
               git add lesson-7/charts/django-app/values.yaml
-              git commit -m "Update image tag to $IMAGE_TAG"
+              git commit -m "Update image tag to $IMAGE_TAG [skip ci]"
               git push origin $TARGET_BRANCH
             '''
           }
         }
       }
+    }
+  }
+
+  post {
+    success {
+      script {
+        if (env.SKIP_CI == 'true') {
+          echo "No app changes to build (skip ci commit)."
+        } else {
+          echo "Pipeline OK. Image ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} pushed."
+        }
+      }
+    }
+    failure {
+      echo "Pipeline failed. Check the stage logs above."
+    }
+    always {
+      cleanWs()
     }
   }
 }

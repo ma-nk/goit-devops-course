@@ -121,10 +121,10 @@ variable "parameter_group_family_aurora" {
 variable "parameters" {
   description = "Мапа кастомних параметрів конфігурації СУБД для Parameter Group"
   type        = map(string)
-  default     = {
-    max_connections              = "200"
-    log_min_duration_statement   = "500"
-    work_mem                     = "4096"
+  default = {
+    max_connections            = "200"
+    log_min_duration_statement = "500"
+    work_mem                   = "4096"
   }
 }
 

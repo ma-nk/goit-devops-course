@@ -17,41 +17,58 @@ provider "kubernetes" {
 }
 
 module "s3_backend" {
-  source = "./modules/s3-backend"                # Шлях до модуля
-  bucket_name = "goit-devops-lesson-7-state-yuriim"  # Унікальне ім'я S3-бакета
-  table_name  = "terraform-locks"                # Ім'я DynamoDB
+  source      = "./modules/s3-backend"              # Шлях до модуля
+  bucket_name = "goit-devops-lesson-7-state-yuriim" # Унікальне ім'я S3-бакета
+  table_name  = "terraform-locks"                   # Ім'я DynamoDB
 }
 
 module "vpc" {
-  source              = "./modules/vpc"                                       # Шлях до модуля VPC
-  vpc_cidr_block      = "10.0.0.0/16"                                         # CIDR-блок для VPC
-  public_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]         # Публічні підмережі
-  private_subnets     = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]         # Приватні підмережі
-  availability_zones  = ["eu-north-1a", "eu-north-1b", "eu-north-1c"]            # Зони доступності
-  vpc_name            = "vpc"                                                 # Ім'я VPC
+  source             = "./modules/vpc"                               # Шлях до модуля VPC
+  vpc_cidr_block     = "10.0.0.0/16"                                 # CIDR-блок для VPC
+  public_subnets     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"] # Публічні підмережі
+  private_subnets    = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"] # Приватні підмережі
+  availability_zones = ["eu-north-1a", "eu-north-1b", "eu-north-1c"] # Зони доступності
+  vpc_name           = "vpc"                                         # Ім'я VPC
 }
 
 module "ecr" {
-  source          = "./modules/ecr"   # Шлях до модуля
-  repository_name = "app-repo"        # Назва репозиторію
-  environment     = "dev"             # Середовище
+  source          = "./modules/ecr" # Шлях до модуля
+  repository_name = "app-repo"      # Назва репозиторію
+  environment     = "dev"           # Середовище
 }
 
 module "eks" {
-  source          = "./modules/eks"          
-  cluster_name    = "eks-cluster-demo"            # Назва кластера
-  subnet_ids      = module.vpc.private_subnets     # ID підмереж
-  instance_type   = "t3.medium"                    # Тип інстансів
-  desired_size    = 2                             # Бажана кількість нодів
-  max_size        = 3                             # Максимальна кількість нодів
-  min_size        = 2                             # Мінімальна кількість нодів
+  source        = "./modules/eks"
+  cluster_name  = "eks-cluster-demo"         # Назва кластера
+  subnet_ids    = module.vpc.private_subnets # ID підмереж
+  instance_type = "t3.small"                 # Тип інстансів
+  desired_size  = 3                          # Бажана кількість нодів
+  max_size      = 4                          # Максимальна кількість нодів
+  min_size      = 2                          # Мінімальна кількість нодів
+}
+
+module "metrics_server" {
+  source = "./modules/metrics_server"
+  providers = {
+    helm       = helm
+    kubernetes = kubernetes
+  }
+}
+
+module "monitoring" {
+  source = "./modules/monitoring"
+  providers = {
+    helm       = helm
+    kubernetes = kubernetes
+  }
 }
 
 module "jenkins" {
-  source            = "./modules/jenkins"
-  cluster_name      = module.eks.eks_cluster_name
-  oidc_provider_arn = module.eks.oidc_provider_arn
-  oidc_provider_url = module.eks.oidc_provider_url
+  source             = "./modules/jenkins"
+  cluster_name       = module.eks.eks_cluster_name
+  oidc_provider_arn  = module.eks.oidc_provider_arn
+  oidc_provider_url  = module.eks.oidc_provider_url
+  ecr_repository_arn = module.ecr.repository_arn
   providers = {
     helm       = helm
     kubernetes = kubernetes
@@ -59,8 +76,8 @@ module "jenkins" {
 }
 
 module "argo_cd" {
-  source       = "./modules/argo_cd"
-  namespace    = "argocd"
+  source        = "./modules/argo_cd"
+  namespace     = "argocd"
   chart_version = "5.46.4"
   providers = {
     helm       = helm
@@ -71,15 +88,15 @@ module "argo_cd" {
 module "rds" {
   source = "./modules/rds"
 
-  name                       = "myapp-db"
-  use_aurora                 = false
-  aurora_instance_count      = 2
+  name                  = "myapp-db"
+  use_aurora            = false
+  aurora_instance_count = 2
 
   # --- Aurora-only ---
-  engine_cluster             = "aurora-postgresql"
-  engine_version_cluster     = "15.3"
+  engine_cluster                = "aurora-postgresql"
+  engine_version_cluster        = "15.3"
   parameter_group_family_aurora = "aurora-postgresql15"
-  
+
 
   # --- RDS-only ---
   engine                     = "postgres"
@@ -87,21 +104,21 @@ module "rds" {
   parameter_group_family_rds = "postgres17"
 
   # Common
-  instance_class             = "db.t3.micro"
-  allocated_storage          = 20
-  db_name                    = "myapp"
-  username                   = "postgres"
-  password                   = var.db_password
-  subnet_private_ids         = module.vpc.private_subnets
-  subnet_public_ids          = module.vpc.public_subnets
-  publicly_accessible        = false
-  allowed_cidr_blocks        = [module.vpc.vpc_cidr_block]
-  vpc_id                     = module.vpc.vpc_id
-  multi_az                   = true
-  backup_retention_period    = 1
+  instance_class          = "db.t3.micro"
+  allocated_storage       = 20
+  db_name                 = "myapp"
+  username                = "postgres"
+  password                = var.db_password
+  subnet_private_ids      = module.vpc.private_subnets
+  subnet_public_ids       = module.vpc.public_subnets
+  publicly_accessible     = false
+  allowed_cidr_blocks     = [module.vpc.vpc_cidr_block]
+  vpc_id                  = module.vpc.vpc_id
+  multi_az                = true
+  backup_retention_period = 1
   parameters = {
-    max_connections              = "200"
-    log_min_duration_statement   = "500"
+    max_connections            = "200"
+    log_min_duration_statement = "500"
   }
 
   tags = {

@@ -56,3 +56,9 @@ output "jenkins_release" {
 output "jenkins_namespace" {
   value = module.jenkins.jenkins_namespace
 }
+
+output "argo_cd_server_url" {
+  description = "URL of the Argo CD server service"
+  value       = module.argo_cd.argo_cd_server_url
+}
+
