@@ -57,6 +57,12 @@ variable "allocated_storage" {
   default     = 20
 }
 
+variable "storage_encrypted" {
+  description = "Чи вмикати шифрування сховища (storage encryption)"
+  type        = bool
+  default     = true
+}
+
 variable "db_name" {
   description = "Ім'я початкової бази даних"
   type        = string

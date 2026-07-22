@@ -91,6 +91,7 @@ module "rds" {
   name                  = "myapp-db"
   use_aurora            = false
   aurora_instance_count = 2
+  aurora_replica_count  = 1
 
   # --- Aurora-only ---
   engine_cluster                = "aurora-postgresql"

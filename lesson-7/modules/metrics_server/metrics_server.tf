@@ -5,10 +5,4 @@ resource "helm_release" "metrics_server" {
   version          = "3.12.1"
   namespace        = "kube-system"
   create_namespace = false
-
-  values = [
-    yamlencode({
-      args = ["--kubelet-insecure-tls"]
-    })
-  ]
 }

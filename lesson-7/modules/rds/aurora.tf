@@ -9,6 +9,7 @@ resource "aws_rds_cluster" "aurora" {
   database_name                   = var.db_name
   db_subnet_group_name            = aws_db_subnet_group.default.name
   vpc_security_group_ids          = [aws_security_group.rds.id]
+  storage_encrypted               = var.storage_encrypted
   backup_retention_period         = var.backup_retention_period
   skip_final_snapshot             = true
   final_snapshot_identifier       = "${var.name}-final-snapshot"
@@ -32,7 +33,7 @@ resource "aws_rds_cluster_instance" "aurora_writer" {
 
 # Reader replicas
 resource "aws_rds_cluster_instance" "aurora_readers" {
-  count                = var.use_aurora ? var.aurora_replica_count : 0
+  count                = var.use_aurora ? (var.aurora_replica_count > 0 ? var.aurora_replica_count : max(0, var.aurora_instance_count - 1)) : 0
   identifier           = "${var.name}-reader-${count.index}"
   cluster_identifier   = aws_rds_cluster.aurora[0].id
   instance_class       = var.instance_class

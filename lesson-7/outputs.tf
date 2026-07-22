@@ -62,3 +62,16 @@ output "argo_cd_server_url" {
   value       = module.argo_cd.argo_cd_server_url
 }
 
+#-------------RDS-----------------
+
+output "rds_endpoint" {
+  description = "Connection endpoint for the RDS database"
+  value       = module.rds.endpoint
+}
+
+output "rds_port" {
+  description = "Database port for the RDS database"
+  value       = module.rds.port
+}
+
+
